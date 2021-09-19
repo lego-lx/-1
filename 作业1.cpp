@@ -143,3 +143,19 @@ int main(int argc, char *argv[])
 			totalNum ++;
 		}
 	}
+		// 扫描关键字表并打印记录字段 
+	for (n = 0; n < NKEYWORDS; n++)
+	{
+		if (KeyWordTable[n].count > 0)
+		{
+
+			//cout << KeyWordTable[n].count;
+			//cout << "  " << KeyWordTable[n].keyword << endl;
+
+			if(strcmp(KeyWordTable[n].keyword,"switch") == 0)
+			{
+				switchNum = KeyWordTable[n].count;
+			}
+
+		}
+	}
