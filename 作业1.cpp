@@ -28,3 +28,27 @@ int SeqSearch(KeyWord *tab, int n, char *word)
 	}
 	return -1;
 }
+// 提取以字母和其他字母/数字开头的单词
+int GetWord (ifstream& fin, char w[])
+{
+	char c;
+	int  i = 0;
+
+	// 跳过非字母输入 
+	while ( fin.get(c) && !isalpha(c))
+		;
+
+	// 在文件末尾返回0 
+	if (fin.eof())
+		return 0;
+
+	// 记录单词的第一个字母 
+	w[i++] = c;
+
+	// 收集字母与数字，以null结尾 
+	while (fin.get(c) && (isalpha(c) || isdigit(c)))
+		w[i++] = c;
+	w[i] = '\0';
+
+	return  1;              // 返回1就成功 
+}
