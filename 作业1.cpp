@@ -18,3 +18,13 @@ KeyWord KeyWordTable[] =
 };
 
 // 基于关键字数组顺序搜索算法 
+int SeqSearch(KeyWord *tab, int n, char *word) 
+{
+	int i;
+	for(i = 0;i < n;i++,tab++)
+	{
+		if(strcmp(tab->keyword,word)==0)
+			return i;
+	}
+	return -1;
+}
