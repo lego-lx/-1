@@ -159,3 +159,35 @@ int main(int argc, char *argv[])
 
 		}
 	}
+		switch (op)
+	{
+	case 1:
+		cout << "total num:"<<totalNum<<endl;
+		break;
+	case 2:
+		cout << "total num:"<<totalNum<<endl;
+		cout << "switch num:"<<switchNum<<endl;
+		cout << "case num:"<<caseNum1 <<"  "<<caseNum2<<endl;
+		break;
+	case 3:
+		cout << "total num:"<<totalNum<<endl;
+		cout << "switch num:"<<switchNum<<endl;
+		cout << "case num:"<<caseNum1 <<"  "<<caseNum2<<endl;
+		cout <<"if-else:"<<nif_elseNum<<endl;
+		break;
+	case 4:
+		cout << "total num:"<<totalNum<<endl;
+		cout << "switch num:"<<switchNum<<endl;
+		cout << "case num:"<<caseNum1 <<"  "<<caseNum2<<endl;
+		cout <<"if-else:"<<nif_elseNum<<endl;
+		cout <<"if -elseif-else num:"<<nif_elseifNum<<endl;
+		break;
+	default:
+		break;
+	}
+	fin.close();
+
+
+	return 0;
+}
+
