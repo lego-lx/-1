@@ -52,3 +52,94 @@ int GetWord (ifstream& fin, char w[])
 
 	return  1;              // 返回1就成功 
 }
+int main(int argc, char *argv[])
+{
+
+	if(argc < 2)
+	{
+		cerr<<"Input parameter error"<<endl;
+		exit (1);
+	}
+	int op = atoi(argv[2]);
+	const int MAXWORD = 50;             
+    // r任何单词的最大大小 
+	// 声明table大小并且初始化其值 
+	const int NKEYWORDS = sizeof(KeyWordTable)/sizeof(KeyWord);
+	int totalNum = 0;
+	int switchNum = 0;
+	int caseNum1 = 0;
+	int caseNum2 = 0;
+	int nif_elseNum = 0;
+	int nif_elseifNum =0;
+	int nCnt = 0;
+	int nCnt1 =0;
+	int flag = 0;
+	bool bflag = false;
+	int n;
+	char word[MAXWORD];
+	ifstream fin;    
+	fin.open(argv[1],ios::in );
+	if (!fin)
+	{
+		cerr << "Could not open file 'key.cpp'" << endl;
+		exit (1);
+	}
+
+	// 提取单词直到文件结束 
+	while (GetWord(fin, word))
+	{
+		// 如果关键字表中有匹配项，则递增计数 
+		if ((n = SeqSearch(KeyWordTable,NKEYWORDS,word)) != -1)
+		{
+			if(strcmp(word,"switch") == 0)
+			{
+				flag ++;
+			}
+			if(flag == 1)
+			{
+				if(strcmp(word,"case") == 0)
+					caseNum1++;
+			}
+
+			else
+			{
+				if(strcmp(word,"case") == 0)
+					caseNum2++;
+			}
+
+			if(strcmp(word,"if") == 0)
+			{
+				nCnt ++;
+
+			}
+			if(nCnt == 2)
+			{
+				if(strcmp(word,"if") == 0)
+				{
+					bflag = true;
+				}
+			}else
+			{
+				if(bflag == true)
+				{
+					if(strcmp(word,"else") == 0)
+					{
+						nCnt1 ++;
+					}
+				}
+			}
+			if(nCnt1 ==2)
+			{
+				if(strcmp(word,"else") == 0)
+				{
+					nCnt1 = 0;
+					nCnt = 0;
+					nif_elseNum ++;
+					nif_elseifNum++;
+				}
+			}
+			//cout<<"word:"<<word<<endl;
+			KeyWordTable[n].count++;
+			totalNum ++;
+		}
+	}
