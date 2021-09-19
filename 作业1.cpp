@@ -1,7 +1,9 @@
 #include <iostream>
-#include <string.h> 
+#include <fstream>
+#include <string.h>     
+#include <ctype.h>      // 提供isalpha函数（判断一个字符是否为字母）和isdigit 函数 （判断是否为数字） 
 #include <stdlib.h>
-//先把题目中所有关键字弄进来 
+
 using namespace std;
 
 struct KeyWord
