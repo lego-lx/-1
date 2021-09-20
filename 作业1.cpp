@@ -1,11 +1,13 @@
 #include <iostream>
 #include <fstream>
-#include <string.h>     
-#include <ctype.h>      // 提供isalpha函数（判断一个字符是否为字母）和isdigit 函数 （判断是否为数字） 
+#include <string.h>     // must include if string functions used
+#include <ctype.h>      // provides isalpha and isdigit
 #include <stdlib.h>
-
 using namespace std;
-
+#include<windows.h>
+#include<winbase.h>
+#define MaxSize 50
+// declare the word structure
 struct KeyWord
 {
 	char keyword[32];
@@ -19,7 +21,7 @@ KeyWord KeyWordTable[] =
 	{"struct",0},{"switch",0},{"typedef",0},{"union",0},{"unsigned",0},{"void",0},{"volatile",0},{"while", 0}
 };
 
-// 基于关键字数组顺序搜索算法 
+// the sequential search algorithm on the array of keywords
 int SeqSearch(KeyWord *tab, int n, char *word) 
 {
 	int i;
@@ -30,30 +32,34 @@ int SeqSearch(KeyWord *tab, int n, char *word)
 	}
 	return -1;
 }
-// 提取以字母和其他字母/数字开头的单词
+
+// extract a word beginning with a letter and possibly
+// other letters/digits
 int GetWord (ifstream& fin, char w[])
 {
 	char c;
 	int  i = 0;
 
-	// 跳过非字母输入 
+	// skip non-alphabetic input
 	while ( fin.get(c) && !isalpha(c))
 		;
 
-	// 在文件末尾返回0 
+	// return 0 (Failure) on end of file
 	if (fin.eof())
 		return 0;
 
-	// 记录单词的第一个字母 
+	// record 1st letter of the word    
 	w[i++] = c;
 
-	// 收集字母与数字，以null结尾 
+	// collect letters and digits and NULL terminate string
 	while (fin.get(c) && (isalpha(c) || isdigit(c)))
 		w[i++] = c;
 	w[i] = '\0';
 
-	return  1;              // 返回1就成功 
+	return  1;              // return 1 (Success)
 }
+
+
 int main(int argc, char *argv[])
 {
 
@@ -63,52 +69,60 @@ int main(int argc, char *argv[])
 		exit (1);
 	}
 	int op = atoi(argv[2]);
-	const int MAXWORD = 50;             
-    // r任何单词的最大大小 
-	// 声明table大小并且初始化其值 
+	// declare the table size and initialize its value
+	
 	const int NKEYWORDS = sizeof(KeyWordTable)/sizeof(KeyWord);
 	int totalNum = 0;
 	int switchNum = 0;
-	int caseNum1 = 0;
-	int caseNum2 = 0;
 	int nif_elseNum = 0;
 	int nif_elseifNum =0;
 	int nCnt = 0;
 	int nCnt1 =0;
-	int flag = 0;
 	bool bflag = false;
 	int n;
-	char word[MAXWORD];
-	ifstream fin;    
+	char word[MaxSize];
+	ifstream fin;
+	bool bSwitch = false;
+	char pCase[256]={0};
+	// open file with error checking    
+	DWORD m =::GetTickCount(); //获取毫秒级数目
 	fin.open(argv[1],ios::in );
 	if (!fin)
 	{
 		cerr << "Could not open file 'key.cpp'" << endl;
 		exit (1);
 	}
-
-	// 提取单词直到文件结束 
+	int nCount = 0;
+	int nCaseNum = 0;
+	 
+	// extract words until end of file
 	while (GetWord(fin, word))
 	{
-		// 如果关键字表中有匹配项，则递增计数 
+		// if a match in keyword table, increment count
 		if ((n = SeqSearch(KeyWordTable,NKEYWORDS,word)) != -1)
 		{
 			if(strcmp(word,"switch") == 0)
 			{
-				flag ++;
+				switchNum ++;
+				nCount ++;
+				bSwitch = true;
+				
 			}
-			if(flag == 1)
+			if(bSwitch == true)
 			{
 				if(strcmp(word,"case") == 0)
-					caseNum1++;
+					nCaseNum++;
 			}
-
-			else
+			if(strcmp(word,"default") == 0)
 			{
-				if(strcmp(word,"case") == 0)
-					caseNum2++;
-			}
+				char p[256]={0};
+				sprintf(p,"%d",nCaseNum);
+				strcat(p," ");
+				strcat(pCase,p);
 
+				nCaseNum = 0;
+				bSwitch = false;
+			}
 			if(strcmp(word,"if") == 0)
 			{
 				nCnt ++;
@@ -145,23 +159,8 @@ int main(int argc, char *argv[])
 			totalNum ++;
 		}
 	}
-		// 扫描关键字表并打印记录字段 
-	for (n = 0; n < NKEYWORDS; n++)
-	{
-		if (KeyWordTable[n].count > 0)
-		{
-
-			//cout << KeyWordTable[n].count;
-			//cout << "  " << KeyWordTable[n].keyword << endl;
-
-			if(strcmp(KeyWordTable[n].keyword,"switch") == 0)
-			{
-				switchNum = KeyWordTable[n].count;
-			}
-
-		}
-	}
-		switch (op)
+	
+    switch (op)
 	{
 	case 1:
 		cout << "total num:"<<totalNum<<endl;
@@ -169,27 +168,29 @@ int main(int argc, char *argv[])
 	case 2:
 		cout << "total num:"<<totalNum<<endl;
 		cout << "switch num:"<<switchNum<<endl;
-		cout << "case num:"<<caseNum1 <<"  "<<caseNum2<<endl;
+		cout << "case num:"<<pCase<<endl;
 		break;
 	case 3:
 		cout << "total num:"<<totalNum<<endl;
 		cout << "switch num:"<<switchNum<<endl;
-		cout << "case num:"<<caseNum1 <<"  "<<caseNum2<<endl;
-		cout <<"if-else:"<<nif_elseNum<<endl;
+		cout << "case num:"<<pCase<<endl;
+		cout<<"if-else:"<<nif_elseNum<<endl;
 		break;
 	case 4:
 		cout << "total num:"<<totalNum<<endl;
 		cout << "switch num:"<<switchNum<<endl;
-		cout << "case num:"<<caseNum1 <<"  "<<caseNum2<<endl;
-		cout <<"if-else:"<<nif_elseNum<<endl;
-		cout <<"if -elseif-else num:"<<nif_elseifNum<<endl;
+		cout << "case num:"<<pCase<<endl;
+		cout<<"if-else:"<<nif_elseNum<<endl;
+		cout<<"if -elseif-else num:"<<nif_elseifNum<<endl;
 		break;
 	default:
 		break;
 	}
+	DWORD e=::GetTickCount(); //获取毫秒级数目 　　
+	int se = e-m; // se为毫秒 　　
+	cout<<"总耗耗时："<<se<<"毫秒"<<endl;
 	fin.close();
 
 
 	return 0;
 }
-
